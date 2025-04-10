@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erreur</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <style>
+        :root {
+            --netflix-red: #e50914;
+            --netflix-dark: #141414;
+            --netflix-gray: #333;
+            --netflix-light: #fff;
+        }
+
+        body {
+            background-color: var(--netflix-dark);
+            color: var(--netflix-light);
+            font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding-top: 70px;
+            min-height: 100vh;
+        }
+
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 70px);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .error-title {
+            font-size: 2rem;
+            color: var(--netflix-red);
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-details {
+            font-size: 1rem;
+            color: var(--netflix-gray);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            word-wrap: break-word;
+        }
+
+        .home-button {
+            background-color: var(--netflix-red);
+            color: var(--netflix-light);
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .home-button:hover {
+            background-color: #f40612;
+            color: var(--netflix-light);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    
+    <div class="error-container">
+        <h1 class="error-title">Une erreur est survenue</h1>
+        <p class="error-message" th:text="${error}">Message d'erreur</p>
+        <p class="error-details" th:if="${errorDetails != null}" th:text="${errorDetails}">Détails de l'erreur</p>
+        <a th:href="@{/}" class="home-button">Retour à l'accueil</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/navbar.js"></script>
+</body>
+</html> 

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Navbar Fragment</title>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="navbar-brand">TFARAJ</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="/movies" class="nav-link">Films</a>
+                <a href="/series" class="nav-link">Séries</a>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div sec:authorize="!isAuthenticated()">
+                <a href="/auth/login" class="nav-link">Connexion</a>
+                <a href="/auth/register" class="nav-link">S'inscrire</a>
+            </div>
+            <div sec:authorize="isAuthenticated()" class="user-menu">
+                <div class="dropdown">
+                    <button class="btn btn-link nav-link dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i>
+                        <span sec:authentication="name"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="/profile">Mon Profil</a></li>
+                        <li><a class="dropdown-item" href="/profile/watchlist">Ma Liste</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/auth/logout">Déconnexion</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <style>
+        .user-menu .dropdown-toggle {
+            color: var(--netflix-light);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+        }
+
+        .user-menu .dropdown-toggle:hover {
+            color: var(--netflix-light);
+        }
+
+        .user-menu .dropdown-menu {
+            background-color: var(--netflix-dark);
+            border: 1px solid var(--netflix-gray);
+        }
+
+        .user-menu .dropdown-item {
+            color: var(--netflix-light);
+        }
+
+        .user-menu .dropdown-item:hover {
+            background-color: var(--netflix-gray);
+            color: var(--netflix-light);
+        }
+
+        .user-menu .dropdown-divider {
+            border-color: var(--netflix-gray);
+        }
+
+        .user-menu i {
+            margin-right: 8px;
+        }
+    </style>
+</body>
+</html> 

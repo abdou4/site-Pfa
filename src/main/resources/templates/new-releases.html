@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouveautés - Solima</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-dark text-white">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Solima</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/movies">Films</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/series">Séries</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/new-releases">Nouveautés</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <form class="d-flex me-2" action="/search" method="GET">
+                        <input class="form-control me-2" type="search" placeholder="Rechercher..." name="q">
+                        <button class="btn btn-outline-light" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    <div th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a href="/profile" class="btn btn-outline-light me-2">
+                            <i class="fas fa-user"></i> Profil
+                        </a>
+                        <a href="/auth/logout" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </div>
+                    <div th:unless="${#authorization.expression('isAuthenticated()')}">
+                        <a href="/auth/login" class="btn btn-outline-light">Connexion</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-section" th:if="${featuredNew != null}">
+        <div class="container-fluid p-0">
+            <div class="position-relative">
+                <img th:src="${featuredNew.posterUrl}" class="w-100 hero-image" alt="Featured Content">
+                <div class="hero-overlay">
+                    <div class="container">
+                        <div class="hero-content">
+                            <span class="badge bg-danger mb-3">Nouveau</span>
+                            <h1 class="display-4" th:text="${featuredNew.title}">Titre</h1>
+                            <p class="lead" th:text="${featuredNew.description}">Description</p>
+                            <a th:href="@{${featuredNew.type == 'MOVIE' ? '/movies/' : '/series/'} + ${featuredNew.id}}" 
+                               class="btn btn-primary btn-lg me-2">
+                                <i class="fas fa-info-circle me-2"></i>Plus d'infos
+                            </a>
+                            <a th:if="${#authorization.expression('isAuthenticated()')}"
+                               th:href="@{'/watch/' + ${featuredNew.id}}" 
+                               class="btn btn-light btn-lg">
+                                <i class="fas fa-play me-2"></i>Regarder
+                            </a>
+                            <a th:unless="${#authorization.expression('isAuthenticated()')}"
+                               href="/auth/login" 
+                               class="btn btn-light btn-lg">
+                                <i class="fas fa-play me-2"></i>Regarder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="py-5">
+        <div class="container">
+            <h2 class="mb-4">Nouveaux Films</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                <div class="col" th:each="movie : ${newMovies}">
+                    <div class="card h-100 bg-dark movie-card">
+                        <div class="position-relative">
+                            <img th:src="${movie.posterUrl}" class="card-img-top" th:alt="${movie.title}">
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">Nouveau</span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${movie.title}">Titre du film</h5>
+                            <p class="card-text text-muted">
+                                <span th:text="${movie.releaseYear}">2024</span> • 
+                                <span th:text="${movie.durationMinutes + ' min'}">120 min</span>
+                            </p>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="badge bg-primary me-2" th:each="genre : ${movie.genres}" th:text="${genre}">Genre</span>
+                            </div>
+                            <p class="card-text small" th:text="${#strings.abbreviate(movie.description, 100)}">Description</p>
+                        </div>
+                        <div class="card-footer bg-dark border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a th:href="@{'/movies/' + ${movie.id}}" class="btn btn-outline-light btn-sm">
+                                    Plus d'infos
+                                </a>
+                                <a th:if="${#authorization.expression('isAuthenticated()')}"
+                                   th:href="@{'/watch/' + ${movie.id}}" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-play me-1"></i>Regarder
+                                </a>
+                                <a th:unless="${#authorization.expression('isAuthenticated()')}"
+                                   href="/auth/login" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-play me-1"></i>Regarder
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-black">
+        <div class="container">
+            <h2 class="mb-4">Nouvelles Séries</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                <div class="col" th:each="series : ${newSeries}">
+                    <div class="card h-100 bg-dark movie-card">
+                        <div class="position-relative">
+                            <img th:src="${series.posterUrl}" class="card-img-top" th:alt="${series.title}">
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">Nouveau</span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${series.title}">Titre de la série</h5>
+                            <p class="card-text text-muted">
+                                <span th:text="${series.releaseYear}">2024</span> • 
+                                <span th:text="${series.numberOfSeasons + ' saisons'}">3 saisons</span>
+                            </p>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="badge bg-primary me-2" th:each="genre : ${series.genres}" th:text="${genre}">Genre</span>
+                            </div>
+                            <p class="card-text small" th:text="${#strings.abbreviate(series.description, 100)}">Description</p>
+                        </div>
+                        <div class="card-footer bg-dark border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a th:href="@{'/series/' + ${series.id}}" class="btn btn-outline-light btn-sm">
+                                    Plus d'infos
+                                </a>
+                                <a th:if="${#authorization.expression('isAuthenticated()')}"
+                                   th:href="@{'/watch/series/' + ${series.id}}" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-play me-1"></i>Regarder
+                                </a>
+                                <a th:unless="${#authorization.expression('isAuthenticated()')}"
+                                   href="/auth/login" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-play me-1"></i>Regarder
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                document.querySelector('.navbar').classList.add('scrolled');
+            } else {
+                document.querySelector('.navbar').classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html> 

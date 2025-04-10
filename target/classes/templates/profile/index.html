@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFARAJ - Profil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <style>
+        :root {
+            --netflix-red: #e50914;
+            --netflix-dark: #141414;
+            --netflix-gray: #333;
+            --netflix-light: #fff;
+        }
+
+        body {
+            background-color: var(--netflix-dark);
+            color: var(--netflix-light);
+            font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding-top: 70px;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: rgba(0,0,0,0.75);
+            border-radius: 5px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--netflix-gray);
+        }
+
+        .profile-picture {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-right: 2rem;
+            background-color: var(--netflix-gray);
+        }
+
+        .profile-info h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .profile-info p {
+            margin: 0.5rem 0;
+            color: #999;
+        }
+
+        .profile-actions {
+            margin-top: 2rem;
+        }
+
+        .btn-profile {
+            background-color: var(--netflix-red);
+            color: var(--netflix-light);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            margin-right: 1rem;
+            text-decoration: none;
+        }
+
+        .btn-profile:hover {
+            background-color: #f40612;
+            color: var(--netflix-light);
+        }
+
+        .change-password-form {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--netflix-gray);
+        }
+
+        .form-control {
+            background-color: var(--netflix-gray);
+            border: none;
+            color: var(--netflix-light);
+            margin-bottom: 1rem;
+        }
+
+        .form-control:focus {
+            background-color: var(--netflix-gray);
+            color: var(--netflix-light);
+            box-shadow: none;
+        }
+
+        .alert {
+            margin-bottom: 1rem;
+        }
+
+        .debug-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="navbar-brand">TFARAJ</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="/movies" class="nav-link">Films</a>
+                <a href="/series" class="nav-link">Séries</a>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div sec:authorize="isAuthenticated()">
+                <a href="/profile" class="nav-link">Profil</a>
+                <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="nav-link" style="background: none; border: none;">Déconnexion</button>
+                </form>
+            </div>
+            <div sec:authorize="!isAuthenticated()">
+                <a href="/auth/login" class="nav-link">Connexion</a>
+                <a href="/auth/register" class="nav-link">S'inscrire</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <!-- Debug Info -->
+        <div class="debug-info">
+            <h3>Informations de débogage</h3>
+            <p>Authentifié : <span sec:authorize="isAuthenticated()">Oui</span><span sec:authorize="!isAuthenticated()">Non</span></p>
+            <p>Nom d'utilisateur : <span sec:authentication="name">Non connecté</span></p>
+            <p>Rôles : <span sec:authentication="authorities">Aucun</span></p>
+        </div>
+
+        <div class="profile-header">
+            <div class="profile-picture">
+                <i class="fas fa-user fa-3x" style="margin: 25px;"></i>
+            </div>
+            <div class="profile-info">
+                <h1 th:text="${user?.username}">Nom d'utilisateur</h1>
+                <p th:text="${user?.email}">email@example.com</p>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <a href="/profile/history" class="btn-profile">
+                <i class="fas fa-history"></i> Historique
+            </a>
+        </div>
+
+        <div class="change-password-form">
+            <h2>Changer le mot de passe</h2>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            
+            <form th:action="@{/profile/change-password}" method="post">
+                <div class="mb-3">
+                    <input type="password" class="form-control" name="currentPassword" placeholder="Mot de passe actuel" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" name="newPassword" placeholder="Nouveau mot de passe" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" name="confirmPassword" placeholder="Confirmer le nouveau mot de passe" required>
+                </div>
+                <button type="submit" class="btn-profile">Changer le mot de passe</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/navbar.js"></script>
+</body>
+</html> 
